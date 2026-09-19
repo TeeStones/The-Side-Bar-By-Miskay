@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TheSideBar - Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark:#16241b; --dark-2:#1e3025; --sage:#7c9b7e; --gold:#c9a227;
+    --cream:#f5efe0; --cream-2:#ece2c9; --ink:#1c2a1f;
+    --line: rgba(245,239,224,0.18);
+    --font-display:'Fraunces', serif; --font-body:'Karla', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--cream); color:var(--ink); font-family:var(--font-body); line-height:1.5;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+
+  header.site-nav{background:var(--dark); border-bottom:1px solid var(--line);}
+  .nav-inner{max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:14px 24px;}
+  .wordmark{font-family:var(--font-display); font-weight:700; font-style:italic; font-size:24px; color:var(--cream);}
+  .nav-right{display:flex; align-items:center; gap:18px;}
+  .admin-tag{font-size:12px; font-weight:700; color:var(--gold); border:1px solid rgba(201,162,39,0.45); padding:4px 10px; border-radius:100px;}
+  .nav-right a{color:rgba(245,239,224,0.75); text-decoration:none; font-size:14px; font-weight:500;}
+  .nav-right a:hover{color:var(--gold);}
+
+  .gate{background:linear-gradient(180deg, var(--dark) 0%, var(--dark-2) 100%); min-height:70vh; display:flex; align-items:center; justify-content:center; padding:60px 24px;}
+  .gate-box{width:100%; max-width:380px; text-align:left;}
+  .gate-box .icon{width:52px; height:52px; border-radius:50%; background:rgba(201,162,39,0.12); border:1px solid rgba(201,162,39,0.4); display:flex; align-items:center; justify-content:center; margin-bottom:22px;}
+  .gate-box .icon svg{width:20px; height:20px;}
+  h1.gate-title{font-family:var(--font-display); font-weight:700; font-style:italic; font-size:36px; color:var(--cream); line-height:1;}
+  p.gate-sub{color:rgba(245,239,224,0.6); font-size:15px; margin:12px 0 26px;}
+  .gate-box input[type=password]{width:100%; padding:13px 14px; border:1px solid rgba(245,239,224,0.25); border-radius:4px; font-size:15px; margin-bottom:12px; background:rgba(245,239,224,0.06); color:var(--cream);}
+  .gate-box input[type=password]::placeholder{color:rgba(245,239,224,0.4);}
+  .gate-box .err{color:#e3a08f; font-size:13px; margin-bottom:12px; display:none;}
+  .btn-primary{background:var(--gold); color:var(--dark); border:none; padding:13px 24px; border-radius:3px; font-weight:700; font-size:15px; width:100%; text-align:center;}
+  .btn-primary:hover{background:#ddb838;}
+
+  .dashboard{display:none; padding:44px 24px 100px;}
+  .dashboard.open{display:block;}
+  .dash-inner{max-width:860px; margin:0 auto;}
+  h2.section-title{font-family:var(--font-display); font-weight:700; font-style:italic; font-size:30px; margin-bottom:6px;}
+  p.section-sub{color:#4a5548; font-size:15px; margin-bottom:28px;}
+
+  .panel{background:#fff; border:1px solid rgba(28,42,31,0.12); border-radius:6px; padding:26px; margin-bottom:22px;}
+  .panel h3{font-family:var(--font-display); font-weight:700; font-size:19px; color:var(--ink); margin-bottom:16px;}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block; font-size:12px; font-weight:700; color:#3a4a3e; margin-bottom:5px;}
+  .field input, .field textarea{width:100%; padding:9px 11px; border:1px solid rgba(28,42,31,0.25); border-radius:4px; font-family:inherit; font-size:14px; background:var(--cream);}
+  .field textarea{min-height:70px; resize:vertical;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:560px){.field-row{grid-template-columns:1fr;}}
+
+  .cat-group-title{font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--gold); background:var(--dark); padding:8px 12px; border-radius:4px; margin:20px 0 12px;}
+  .cat-group-title:first-child{margin-top:0;}
+
+  .item-editor{border-top:1px solid rgba(28,42,31,0.12); padding-top:12px; margin-top:12px;}
+  .item-editor:first-child, .cat-group-title + .item-editor{border-top:none; margin-top:0; padding-top:0;}
+  .item-editor .row1{display:grid; grid-template-columns:2fr 100px; gap:10px; margin-bottom:6px;}
+  .item-editor .row1 input{font-size:13px;}
+  .item-editor textarea{width:100%; padding:7px 9px; font-size:12px; margin-bottom:6px; min-height:36px;}
+  .item-editor .meta-note{font-size:11px; color:#8a9a8e; margin-bottom:6px;}
+  .extras-compat{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:#3a4a3e;}
+  .extras-compat label{display:flex; align-items:center; gap:6px;}
+
+  .flags-row{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#3a4a3e; margin-top:8px;}
+  .flags-row label{display:flex; align-items:center; gap:6px; font-weight:600;}
+  .flags-row .alcohol-label{color:#a67c00;}
+
+  .avail-detail{margin-top:8px; padding:10px 12px; background:var(--cream); border:1px dashed rgba(28,42,31,0.2); border-radius:4px;}
+  .avail-days{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;}
+  .avail-days label{font-size:11px; display:flex; align-items:center; gap:4px;}
+  .avail-hours{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px;}
+  .avail-hours input{width:60px; padding:5px 7px; font-size:12px;}
+  .avail-label-input{width:100%; padding:6px 8px; font-size:12px;}
+
+  .extra-editor{display:grid; grid-template-columns:2fr 100px; gap:10px; padding:8px 0; border-top:1px dashed rgba(28,42,31,0.15);}
+  .extra-editor:first-of-type{border-top:none;}
+  .extra-editor input{font-size:13px;}
+
+  .save-bar{position:sticky; bottom:0; background:var(--cream); padding:18px 0 4px; display:flex; align-items:center; gap:14px; border-top:1px solid rgba(28,42,31,0.1); margin-top:8px;}
+  .save-bar button{background:var(--gold); border:none; color:var(--dark); font-weight:700; padding:13px 26px; border-radius:4px; font-size:15px;}
+  .save-bar .status{font-size:13px; color:#3f6b47;}
+  .logout-link{background:none; border:none; color:#a63f2c; font-size:13px; text-decoration:underline; margin-left:auto;}
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <div class="wordmark">TheSideBar</div>
+    <div class="nav-right">
+      <span class="admin-tag">Admin</span>
+      <a href="../index.html">View live site</a>
+      <a href="../staff/index.html">Kitchen view</a>
+    </div>
+  </div>
+</header>
+
+<section class="gate" id="gate">
+  <div class="gate-box">
+    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a227" stroke-width="2"><rect x="4" y="11" width="16" height="9" rx="1.5"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg></div>
+    <h1 class="gate-title">Site editor</h1>
+    <p class="gate-sub">Enter the password to edit what visitors see on the main site.</p>
+    <div class="err" id="pwError">That password isn't right - try again.</div>
+    <input type="password" id="pwInput" placeholder="Password" autofocus>
+    <button class="btn-primary" id="pwSubmit">Unlock</button>
+  </div>
+</section>
+
+<main class="dashboard" id="dashboard">
+  <div class="dash-inner">
+    <h2 class="section-title">TheSideBar admin</h2>
+    <p class="section-sub">Changes save live and appear immediately for every visitor to the main site. Kitchen stock toggles live on the separate kitchen view. Set-experience availability windows and the alcohol flag are set in code, not editable here.</p>
+
+    <div class="panel">
+      <h3>Hero and about</h3>
+      <div class="field"><label>Hero tagline</label><textarea id="edit-tagline"></textarea></div>
+      <div class="field"><label>About text</label><textarea id="edit-about"></textarea></div>
+    </div>
+
+    <div class="panel">
+      <h3>Contact and hours</h3>
+      <div class="field-row">
+        <div class="field"><label>Price range (shown in the stats bar)</label><input id="edit-price"></div>
+        <div class="field"><label>Order WhatsApp number</label><input id="edit-orderWhatsapp"></div>
+      </div>
+      <div class="field"><label>Address (short, for stats bar)</label><input id="edit-addrShort"></div>
+      <div class="field"><label>Full address</label><input id="edit-addr"></div>
+      <div class="field"><label>Note under menu (e.g. VAT/pricing note)</label><input id="edit-vatNote"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Extras (add-ons)</h3>
+      <div id="extrasEditorList"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Menu items</h3>
+      <div id="menuEditorList"></div>
+    </div>
+
+    <div class="save-bar">
+      <button id="saveBtn">Save changes</button>
+      <span class="status" id="saveStatus"></span>
+      <button class="logout-link" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+</main>
+
+<script>
+var SITE_PASSWORD = "TSBLekki#63Zvq";
+
+var DEFAULTS = {
+  tagline: "A cosy spot beside the Miskay boutique in Lekki Phase 1 - build your order from our full menu and pick up when it's ready.",
+  about: "Tucked beside the Miskay boutique on Emma Abimbola Cole Street, TheSideBar serves an all-day breakfast and brunch menu alongside mains, salads and dessert in a cosy, green-filled space.",
+  price: "NGN 2,000 - 850,000",
+  addr: "13B Emma Abimbola Cole Street, off Fola Osibo Road, Lekki Phase 1, Eti-Osa, Lagos",
+  addrShort: "13B Emma Abimbola Cole St, Lekki Phase 1",
+  orderWhatsapp: "2349046146129",
+  vatNote: "Prices shown are estimates and may be confirmed at checkout.",
+  extras: [
+    { key:"eggs", name:"Extra Eggs", price:5000 },
+    { key:"sausages", name:"Extra Sausages", price:7000 },
+    { key:"bacon", name:"Extra Bacon", price:7000 },
+    { key:"toast", name:"Extra Toast", price:5000 },
+    { key:"extraPancakes", name:"Extra Pancakes", price:7000 },
+    { key:"extraWaffles", name:"Extra Waffles", price:7000 },
+    { key:"grilledChicken", name:"Add Grilled Chicken", price:10000 },
+    { key:"grilledPrawns", name:"Add Grilled Prawns", price:15000 }
+  ],
+  menuItems: [
+    { key:"eng-breakfast", name:"Traditional English Breakfast", price:22000, category:"Breakfast & Brunch", extras:["eggs","sausages","bacon","toast"],
+      desc:"2 bacon, 2 chicken or cumberland sausage, mushrooms, baked beans, grilled tomatoes, toast, choice of egg (fried, scrambled or sunny side up)" },
+    { key:"am-breakfast", name:"All American Breakfast", price:23000, category:"Breakfast & Brunch", extras:["eggs","sausages","bacon","extraPancakes"],
+      desc:"2 pancakes, 2 bacon, 2 sausages, crispy homestyle potatoes, choice of egg (fried, scrambled or sunny side up) & maple syrup" },
+    { key:"pancake-stacks", name:"Pancake Stacks", price:20000, category:"Breakfast & Brunch", extras:["extraPancakes"],
+      desc:"4 fluffy pancakes stacked high, served warm & golden with torched banana & berries" },
+    { key:"pancake-stacks-nb", name:"Pancake Stacks (Nutella or Biscoff)", price:22000, category:"Breakfast & Brunch", extras:["extraPancakes"],
+      desc:"Same as our pancake stacks, finished with Nutella or Biscoff" },
+    { key:"french-toast", name:"French Toast", price:20000, category:"Breakfast & Brunch", extras:["toast"],
+      desc:"Golden brioche slices, lightly sweet & pan-fried. Served with maple syrup, torched banana & berries" },
+    { key:"french-toast-nb", name:"French Toast (Nutella or Biscoff)", price:22000, category:"Breakfast & Brunch", extras:["toast"],
+      desc:"Same as our French toast, finished with Nutella or Biscoff" },
+    { key:"tsb-breakfast-burger", name:"TSB Breakfast Burger", price:22000, category:"Breakfast & Brunch", extras:["eggs","bacon","sausages"],
+      desc:"Sausage patty, crispy bacon, egg stack, cheese, served with sauteed potatoes or french fries, with a choice of tea or coffee" },
+    { key:"tsb-benedict", name:"TSB Nigerian Benedict", price:20000, category:"Breakfast & Brunch", extras:["eggs"],
+      desc:"Our twist on a classic - 2 poached/fried eggs served over honey beans and plantain, finished with a rich & spicy Aganyin sauce" },
+    { key:"pancakes-chicken", name:"Pancakes & Chicken", price:22000, category:"Breakfast & Brunch", extras:["extraPancakes"],
+      desc:"Freshly homemade fluffy pancakes topped with boneless crispy chicken, served with maple syrup & butter" },
+    { key:"waffles-chicken", name:"Waffles & Chicken", price:22000, category:"Breakfast & Brunch", extras:["extraWaffles"],
+      desc:"Buttermilk waffle, crispy fried chicken, served with whipped cream, butter & maple syrup" },
+
+    { key:"spring-rolls-veg", name:"Spring Rolls (Vegetable)", price:10000, category:"Starters", extras:[],
+      desc:"Jumbo crispy golden vegetable rolls served with our signature Sean Sauce" },
+    { key:"spring-rolls-chicken", name:"Spring Rolls (Chicken)", price:12000, category:"Starters", extras:[],
+      desc:"Jumbo crispy golden chicken spring rolls served with our signature Sean Sauce" },
+    { key:"spring-rolls-shrimp", name:"Spring Rolls (Shrimp)", price:15000, category:"Starters", extras:[],
+      desc:"Jumbo crispy golden shrimp spring rolls served with our signature Sean Sauce" },
+    { key:"short-rib-croquettes", name:"Short Rib Croquettes", price:15000, category:"Starters", extras:[],
+      desc:"Slow cooked shredded beef ribs coated in panko, served with spicy honey mayo" },
+    { key:"mozzarella-sticks", name:"Mozzarella Sticks", price:15000, category:"Starters", extras:[],
+      desc:"Deep fried mozzarella sticks served with a spicy rodo jam" },
+    { key:"prawn-peri-peri", name:"Prawn Peri Peri", price:17000, category:"Starters", extras:[],
+      desc:"Two chargrilled prawns served on a peri peri inspired cream sauce with sauteed onions & garlic bread" },
+    { key:"chicken-wings", name:"Chicken Wings", price:15000, category:"Starters", extras:[],
+      desc:"Choose your style - Crispy, Spicy, Honey Garlic or BBQ - let us know in the notes below" },
+    { key:"tacos", name:"Tacos", price:19000, category:"Starters", extras:[],
+      desc:"Tender braised beef or spicy jerk chicken, served in a soft tortilla wrap - let us know your choice in the notes" },
+    { key:"rock-shrimp-tacos", name:"Rock Shrimp Tacos", price:21000, category:"Starters", extras:[],
+      desc:"Sauteed prawns with pineapple slaw in a soft tortilla" },
+
+    { key:"caesars-salad", name:"Caesars Salad", price:20000, category:"Salads", extras:["grilledChicken","grilledPrawns"],
+      desc:"Crispy iceberg & romaine lettuce, homemade garlic croutons, olives & cherry tomatoes topped with shaved parmesan and caesar dressing" },
+    { key:"summer-salad", name:"Summer Salad", price:22000, category:"Salads", extras:["grilledChicken","grilledPrawns"],
+      desc:"Crisp lettuce, avocado, cherry tomatoes, grapes, charred corn, sliced red onions & vinaigrette" },
+    { key:"tsb-loaded-salad", name:"TSB Loaded Salad", price:29000, category:"Salads", extras:["grilledPrawns"],
+      desc:"Smoked chicken, crispy turkey bacon, plantain chunks, greens & charred sweetcorn, dressed with a creamy yoghurt based paprika dressing" },
+
+    { key:"tsb-club-sandwich", name:"TSB Club Sandwich", price:19500, category:"Mains", extras:[],
+      desc:"Shredded chicken breast, bacon strips, cucumber, cheddar cheese, iceberg lettuce, topped with our signature Sean Sauce. Served with French fries" },
+    { key:"suya-beef-melt", name:"Suya Beef Melt", price:17500, category:"Mains", extras:[],
+      desc:"Beef strips marinated in suya spice, caramelized onions, mozzarella on toasted bread. Served with french fries" },
+    { key:"prawn-pesto-melt", name:"Prawn Pesto Melt", price:20500, category:"Mains", extras:[],
+      desc:"Grilled prawns, caramelized onions, feta & mozzarella cheese, basil tomatoes, pesto sauce mixed with our signature Sean Sauce. Served with French fries" },
+    { key:"grilled-wrap", name:"Grilled Beef/Chicken Wrap", price:18500, category:"Mains", extras:[],
+      desc:"Sliced chicken breast or beef strips, tomato salsa, mushrooms, wrapped in soft tortilla. Served with french fries - let us know your choice in the notes" },
+    { key:"crispy-chicken-burger", name:"Crispy Chicken Burger", price:19500, category:"Mains", extras:[],
+      desc:"Crispy fried chicken breast, lettuce, tomatoes, melted cheddar cheese, topped with our signature Sean Sauce. Served with french fries" },
+    { key:"beef-burger", name:"Beef Burger", price:18500, category:"Mains", extras:[],
+      desc:"Freshly ground beef patty, lettuce, tomatoes, melted cheddar cheese, our signature Sean Sauce. Served with french fries" },
+    { key:"signature-pizza-chicken", name:"Signature Pizza (Chicken)", price:22000, category:"Mains", extras:[],
+      desc:"Hand tossed with our house tomato base & melted cheese, oven baked to perfection" },
+    { key:"signature-pizza-seafood", name:"Signature Pizza (Seafood)", price:25500, category:"Mains", extras:[],
+      desc:"Hand tossed with our house tomato base, seafood & melted cheese, oven baked to perfection" },
+    { key:"spaghetti-bolognese", name:"Spaghetti Bolognese", price:24500, category:"Mains", extras:[],
+      desc:"Spaghetti tossed in our marinated homemade spicy bolognese sauce, topped with parmesan & served with housemade garlic bread" },
+    { key:"chicken-pesto-pasta", name:"Chicken Pesto Pasta", price:24500, category:"Mains", extras:[],
+      desc:"Chargrilled chicken breast, fresh mushrooms, wild thyme, penne pasta tossed in a creamy pesto sauce. Served with housemade garlic bread" },
+    { key:"jerk-seafood-pasta", name:"Jerk Seafood Pasta", price:30500, category:"Mains", extras:[],
+      desc:"Penne pasta with prawns and white fish cooked in a creamy jerk sauce. Served with housemade garlic bread" },
+    { key:"jerk-seafood-pasta-chicken", name:"Jerk Seafood Pasta (Chicken)", price:27500, category:"Mains", extras:[],
+      desc:"Penne pasta with chicken cooked in a creamy jerk sauce. Served with housemade garlic bread" },
+    { key:"arrabbiata-pasta", name:"Seafood Arrabbiata Pasta", price:30500, category:"Mains", extras:[],
+      desc:"Penne pasta with prawns and white fish cooked in a tomato based sauce. Served with housemade garlic bread" },
+    { key:"arrabbiata-pasta-chicken", name:"Seafood Arrabbiata Pasta (Chicken)", price:27500, category:"Mains", extras:[],
+      desc:"Penne pasta with chicken cooked in a tomato based sauce. Served with housemade garlic bread" },
+    { key:"lamb-chops", name:"Lamb Chops", price:48500, category:"Mains", extras:[],
+      desc:"Marinated lamb chops served with a side option of creamy mashed potatoes, rice or fries - let us know your choice" },
+    { key:"oxtail-bowl", name:"Oxtail Bowl", price:40500, category:"Mains", extras:[],
+      desc:"Tender, slow-cooked oxtail in rich, deep flavours. Served with basmati rice & peas" },
+    { key:"steak-eggs", name:"Steak & Eggs", price:42500, category:"Mains", extras:["eggs"],
+      desc:"350g local ribeye, pan-seared and served with fried egg. Side option of french fries or rice (herbed, jollof or fried) - let us know your choice" },
+    { key:"tsb-roast-chicken", name:"TSB Roast Chicken", price:32500, category:"Mains", extras:[],
+      desc:"Half roasted chicken and our spicy homemade gravy. Side option of french fries or rice (jollof, herbed or fried) - let us know your choice" },
+    { key:"honey-salmon", name:"Honey Salmon", price:48500, category:"Mains", extras:[],
+      desc:"Pan seared honey salmon & sauteed green beans. Side choice of creamy mash, green vegetables or rice (herbed, jollof or fried) - let us know your choice" },
+    { key:"chargrilled-prawns", name:"Chargrilled Prawns", price:44500, category:"Mains", extras:[],
+      desc:"Chargrilled tiger prawns marinated in fresh herbs. Side option of sauteed potatoes, french fries or rice (herbed, jollof or fried) - let us know your choice" },
+
+    { key:"garlic-bread", name:"Garlic Bread", price:5000, category:"Sides", extras:[], desc:"" },
+    { key:"side-rice", name:"Rice", price:5000, category:"Sides", extras:[], desc:"Herbed, jollof or fried - let us know your choice in the notes" },
+    { key:"side-fries", name:"French Fries", price:5000, category:"Sides", extras:[], desc:"" },
+    { key:"fried-plantain", name:"Fried Plantain", price:5000, category:"Sides", extras:[], desc:"" },
+    { key:"sauteed-potatoes", name:"Sauteed Potatoes", price:5000, category:"Sides", extras:[], desc:"" },
+
+    { key:"apple-crumble", name:"Apple Crumble", price:15000, category:"Dessert", extras:[], desc:"" },
+    { key:"strawberry-cheesecake", name:"Strawberry Cheesecake", price:15000, category:"Dessert", extras:[], desc:"" },
+
+    { key:"cafe-latte", name:"Cafe Latte", price:6000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"chai-latte", name:"Chai Latte", price:9000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"cappuccino", name:"Cappuccino", price:7000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"espresso", name:"Espresso", price:5000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"double-espresso", name:"Double Espresso", price:7000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"caramel-macchiato", name:"Caramel Macchiato", price:8000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"mocha-coffee", name:"Mocha Coffee", price:8000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"caramel-frappuccino", name:"Caramel Frappuccino", price:11000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"vanilla-frappuccino", name:"Vanilla Frappuccino", price:11000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"chocolate-frappuccino", name:"Chocolate Frappuccino", price:11000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"hot-chocolate", name:"Hot Chocolate", price:6000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"tea", name:"Tea", price:5000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"iced-coffee", name:"Iced Coffee", price:6000, category:"Hot Drinks", extras:[], desc:"" },
+    { key:"iced-tea", name:"Iced Tea", price:6000, category:"Hot Drinks", extras:[],
+      desc:"Choice of peach, lemon, kiwi, vanilla or caramel - let us know in the notes" },
+    { key:"tropical-iced-tea", name:"TheSideBar Tropical Iced Tea", price:15000, category:"Hot Drinks", extras:[], desc:"" },
+
+    { key:"fresh-juice", name:"Freshly Squeezed Juice", price:8000, category:"Juice & Soft Drinks", extras:[],
+      desc:"Apple, pineapple, orange or watermelon - let us know your choice in the notes" },
+    { key:"concentrated-juice", name:"Concentrated Juice", price:4000, category:"Juice & Soft Drinks", extras:[],
+      desc:"Orange, apple, pineapple or cranberry - let us know your choice" },
+    { key:"water", name:"Water", price:2000, category:"Juice & Soft Drinks", extras:[], desc:"" },
+    { key:"red-bull", name:"Red Bull", price:4000, category:"Juice & Soft Drinks", extras:[], desc:"" },
+    { key:"chapman", name:"Chapman", price:8000, category:"Juice & Soft Drinks", extras:[], desc:"" },
+    { key:"soft-drinks", name:"Soft Drinks", price:2000, category:"Juice & Soft Drinks", extras:[],
+      desc:"Sprite, Coca-Cola, Fanta, Schweppes Tonic or Bitter Lemon - let us know your choice" },
+
+    { key:"smoothie", name:"Smoothie", price:12000, category:"Smoothies", extras:[],
+      desc:"Choose a flavour: Lady Boy (mango, ginger, apple & syrup), I Love You (peach, ginger, mango, orange & whipped cream), Virgin Colada (pineapple, coconut milk & coconut cream), Heartthrob (orange juice, passion fruit, tiger nut & dates), Body Slam (strawberry, banana, orange, apple & syrup), Sweet Mistress (pineapple, orange, strawberry & grenadine), Summer Slider (kiwi, passion fruit, scent leaf & pineapple) or Maiden Secret (mango, banana, popcorn syrup & milk) - let us know in the notes" },
+    { key:"smoothie-mixologist", name:"Mixologist's Special Smoothie", price:12000, category:"Smoothies", extras:[], desc:"" },
+
+    { key:"green-smoothie", name:"Green Smoothie", price:12500, category:"Green Smoothies", extras:[],
+      desc:"Choose a flavour: Treasure Island (avocado, tiger nuts, dates, kiwi, banana, hibiscus juice & ginger), Passion Booster (tiger nuts, mint leaves, pineapple, dates, cherry & peach), Side Attraction (avocado, kiwi, scent leaves, orange juice & honey) or Cruise Control (avocado, mango, ginger & passion fruit) - let us know in the notes" },
+    { key:"green-smoothie-mixologist", name:"Mixologist's Special Green Smoothie", price:13000, category:"Green Smoothies", extras:[], desc:"" },
+
+    { key:"milkshake", name:"Milkshake", price:15000, category:"Milkshakes", extras:[],
+      desc:"Choose a flavour: Strawberry, Oreo, Banana, Biscoff, Coconut Cream Fall or Banana Nut Crunch - let us know in the notes" },
+
+    { key:"unlimited-cocktails", name:"Unlimited Cocktails (Per Head)", price:25000, category:"Set Experiences", extras:[], alcohol:true,
+      availability:{ days:[2,3,4], startHour:16, endHour:20, label:"Tuesday - Thursday, 4pm - 8pm" },
+      desc:"Unlimited Daiquiri (strawberry, passionfruit or peach), Mojito, Long Island Ice Tea, Omoge, Pignac Punch and Green House. Incl. VAT & LCT." },
+    { key:"sunday-brunch", name:"Sunday Brunch (Per Head)", price:44500, category:"Set Experiences", extras:[],
+      availability:{ days:[0], startHour:9, endHour:17, label:"Sundays, 9am - 5pm" },
+      desc:"Choose one starter, one main and one dessert from our Sunday brunch selection, plus a complimentary cocktail or mocktail. Incl. VAT & LCT - let us know your three choices in the notes" },
+
+    { key:"glenfiddich-15", name:"Glenfiddich 15 Years", price:230000, category:"Whiskey", extras:[], alcohol:true, desc:"" },
+    { key:"glenfiddich-18", name:"Glenfiddich 18 Years", price:260000, category:"Whiskey", extras:[], alcohol:true, desc:"" },
+    { key:"jameson-green", name:"Jameson Green", price:70000, category:"Whiskey", extras:[], alcohol:true, desc:"" },
+    { key:"jameson-black-barrel", name:"Jameson Black Barrel", price:100000, category:"Whiskey", extras:[], alcohol:true, desc:"" },
+    { key:"grants-whiskey", name:"Grants Whiskey", price:50000, category:"Whiskey", extras:[], alcohol:true, desc:"" },
+
+    { key:"martell-blue-swift", name:"Martell Blue Swift", price:150000, category:"Cognac", extras:[], alcohol:true, desc:"" },
+    { key:"martell-vs", name:"Martell VS", price:100000, category:"Cognac", extras:[], alcohol:true, desc:"" },
+    { key:"hennessy-vsop", name:"Hennessy VSOP", price:170000, category:"Cognac", extras:[], alcohol:true, desc:"" },
+
+    { key:"don-julio-1942", name:"Don Julio 1942", price:850000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+    { key:"casamigos-reposado", name:"Casamigos Reposado", price:300000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+    { key:"olmeca-blanco-bottle", name:"Olmeca Blanco (Bottle)", price:70000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+    { key:"olmeca-blanco-shot", name:"Olmeca Blanco (Shot)", price:7000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+    { key:"sierra-blanco-bottle", name:"Sierra Blanco (Bottle)", price:55000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+    { key:"sierra-blanco-shot", name:"Sierra Blanco (Shot)", price:7000, category:"Tequila", extras:[], alcohol:true, desc:"" },
+
+    { key:"hendricks", name:"Hendricks", price:100000, category:"Gin", extras:[], alcohol:true, desc:"" },
+    { key:"bombay-sapphire", name:"Bombay Sapphire", price:85000, category:"Gin", extras:[], alcohol:true, desc:"" },
+
+    { key:"absolut", name:"Absolut", price:50000, category:"Vodka", extras:[], alcohol:true, desc:"" },
+    { key:"stoli", name:"Stoli", price:40000, category:"Vodka", extras:[], alcohol:true, desc:"" },
+
+    { key:"bacardi-spice", name:"Bacardi Spice", price:40000, category:"Rum", extras:[], alcohol:true, desc:"" },
+    { key:"bacardi-blanco", name:"Bacardi Blanco", price:40000, category:"Rum", extras:[], alcohol:true, desc:"" },
+    { key:"bacardi-gold", name:"Bacardi Gold", price:40000, category:"Rum", extras:[], alcohol:true, desc:"" },
+
+    { key:"art-de-vivre-red", name:"Art De Vivre (Red)", price:45000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"thomas-barton-medoc", name:"Thomas Barton Medoc", price:80000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"terrazzas-malbec", name:"Terrazzas Malbec", price:90000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"sweet-house-wine-bottle", name:"Sweet House Wine (Bottle)", price:30000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"sweet-house-wine-glass", name:"Sweet House Wine (Glass)", price:10000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"cab-sauv-house-wine-bottle", name:"Cab Sauv House Wine (Bottle)", price:30000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+    { key:"cab-sauv-house-wine-glass", name:"Cab Sauv House Wine (Glass)", price:10000, category:"Red Wine", extras:[], alcohol:true, desc:"" },
+
+    { key:"art-de-vivre-white", name:"Art De Vivre (White)", price:45000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+    { key:"nederburg-sauv-blanc", name:"Nederburg Sauv Blanc", price:45000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+    { key:"sweet-house-sauv-blanc-bottle", name:"Sweet House Sauv Blanc (Bottle)", price:30000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+    { key:"sweet-house-sauv-blanc-glass", name:"Sweet House Sauv Blanc (Glass)", price:10000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+    { key:"house-sauv-blanc-bottle", name:"House Sauv Blanc (Bottle)", price:30000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+    { key:"house-sauv-blanc-glass", name:"House Sauv Blanc (Glass)", price:10000, category:"White Wine", extras:[], alcohol:true, desc:"" },
+
+    { key:"martini-asti", name:"Martini Asti", price:45000, category:"Sparkling Wine", extras:[], alcohol:true, desc:"" },
+    { key:"martini-prosecco", name:"Martini Prosecco", price:45000, category:"Sparkling Wine", extras:[], alcohol:true, desc:"" },
+
+    { key:"moet-brut-imperial", name:"Moet Chandon Brut Imperial", price:190000, category:"Champagne", extras:[], alcohol:true, desc:"" },
+    { key:"moet-nectar-rose", name:"Moet Chandon Nectar Rose", price:250000, category:"Champagne", extras:[], alcohol:true, desc:"" },
+    { key:"veuve-cliquot-brut", name:"Veuve Cliquot Brut", price:210000, category:"Champagne", extras:[], alcohol:true, desc:"" },
+    { key:"veuve-cliquot-rich", name:"Veuve Cliquot Rich", price:275000, category:"Champagne", extras:[], alcohol:true, desc:"" },
+    { key:"laurent-perrier", name:"Laurent Perrier Cuvee Demi-Sec", price:200000, category:"Champagne", extras:[], alcohol:true, desc:"" },
+
+    { key:"mojito", name:"Mojito", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Rum, mint leaf, lime wedges, brown sugar, soda water" },
+    { key:"margarita", name:"Margarita", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Tequila, triple sec, lime juice" },
+    { key:"gin-basil", name:"Gin Basil", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Bombay gin, fresh basil leaves, lime wedges, sugar syrup, tonic water" },
+    { key:"daiquiri", name:"Daiquiri", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Choice of strawberry, passion fruit or peach - let us know in the notes" },
+    { key:"mai-tai", name:"Mai Tai", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"White rum, gold rum, dark rum, apricot, almond syrup & pineapple juice" },
+    { key:"mimosa", name:"Mimosa", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Martini prosecco, passion fruit & orange juice" },
+    { key:"bellini", name:"Bellini", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Martini prosecco & peach syrup" },
+    { key:"pornstar-martini", name:"Pornstar Martini", price:15000, category:"Cocktails", extras:[], alcohol:true, desc:"Vodka, passion fruit puree, citrus juice with a shot of prosecco" },
+
+    { key:"green-house-cocktail", name:"Green House", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Bombay gin, curry leaves, scent leaves, lemon juice, simple syrup & lemonade" },
+    { key:"omoge", name:"Omoge", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Bacardi white, bacardi gold, bacardi spiced, cream, almond syrup & cinnamon syrup" },
+    { key:"pignac-punch", name:"Pignac Punch", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"D'usse VSOP, fresh pineapple, lemon juice, hot & spicy syrup" },
+    { key:"milestone", name:"Milestone", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Bombay gin, black pepper, cinnamon syrup, lemon juice & lemonade" },
+    { key:"big-ben", name:"Big Ben", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Pink berry gin, cucumbers, honey syrup & lemon juice" },
+    { key:"seans-bar", name:"Sean's Bar", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Whisky, pineapple juice, lemon juice & kiwi syrup" },
+    { key:"long-island-ice-tea", name:"Long Island Ice Tea", price:17000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"Vodka, gin, bacardi rum, tequila, triple sec, lime juice, coke" },
+    { key:"whiskey-sour", name:"Whiskey Sour", price:18000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"" },
+    { key:"mixologist-special-cocktail", name:"Mixologist's Special", price:18000, category:"Signature Cocktails", extras:[], alcohol:true, desc:"" }
+  ]
+};
+
+var content = JSON.parse(JSON.stringify(DEFAULTS));
+var sessionPassword = "";
+
+function loadContent(){
+  return fetch('/api/content')
+    .then(function(res){ return res.json(); })
+    .then(function(data){ if(data){ content = Object.assign({}, DEFAULTS, data); } })
+    .catch(function(e){ /* defaults are fine */ });
+}
+
+function fillForm(){
+  document.getElementById('edit-tagline').value = content.tagline;
+  document.getElementById('edit-about').value = content.about;
+  document.getElementById('edit-price').value = content.price;
+  document.getElementById('edit-orderWhatsapp').value = content.orderWhatsapp || "";
+  document.getElementById('edit-addrShort').value = content.addrShort || "";
+  document.getElementById('edit-addr').value = content.addr;
+  document.getElementById('edit-vatNote').value = content.vatNote || "";
+  renderExtrasEditor();
+  renderMenuEditor();
+}
+
+function renderExtrasEditor(){
+  var wrap = document.getElementById('extrasEditorList');
+  wrap.innerHTML = "";
+  content.extras.forEach(function(ex, idx){
+    var row = document.createElement('div');
+    row.className = 'extra-editor';
+    row.innerHTML =
+      '<input data-extra-idx="' + idx + '" data-field="name" value="' + ex.name + '" placeholder="Extra name">' +
+      '<input data-extra-idx="' + idx + '" data-field="price" value="' + ex.price + '" placeholder="Price">';
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var idx = +inp.dataset.extraIdx;
+      var field = inp.dataset.field;
+      content.extras[idx][field] = field === 'price' ? (Number(inp.value) || 0) : inp.value;
+    });
+  });
+}
+
+var DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+function defaultAvailabilityLabel(avail){
+  var dayText = avail.days.map(function(d){ return DAY_NAMES[d]; }).join(", ");
+  function fmt(h){
+    var period = h >= 12 ? "pm" : "am";
+    var h12 = h % 12; if(h12 === 0) h12 = 12;
+    return h12 + period;
+  }
+  return (dayText || "No days set") + ", " + fmt(avail.startHour) + " - " + fmt(avail.endHour);
+}
+
+function renderMenuEditor(){
+  var wrap = document.getElementById('menuEditorList');
+  wrap.innerHTML = "";
+  var lastCategory = null;
+
+  content.menuItems.forEach(function(item, idx){
+    if(item.category !== lastCategory){
+      var heading = document.createElement('div');
+      heading.className = 'cat-group-title';
+      heading.textContent = item.category;
+      wrap.appendChild(heading);
+      lastCategory = item.category;
+    }
+
+    var block = document.createElement('div');
+    block.className = 'item-editor';
+    var extrasCompatHtml = content.extras.map(function(ex){
+      var checked = item.extras.indexOf(ex.key) !== -1 ? 'checked' : '';
+      return '<label><input type="checkbox" data-item-idx="' + idx + '" data-extra-key="' + ex.key + '" ' + checked + '> ' + ex.name + '</label>';
+    }).join('');
+
+    var hasAvail = !!item.availability;
+    var avail = item.availability || { days:[], startHour:0, endHour:24, label:"" };
+    var dayCheckboxesHtml = DAY_NAMES.map(function(d, dIdx){
+      var checked = avail.days.indexOf(dIdx) !== -1 ? 'checked' : '';
+      return '<label><input type="checkbox" data-avail-day-idx="' + idx + '" data-day="' + dIdx + '" ' + checked + '> ' + d + '</label>';
+    }).join('');
+
+    block.innerHTML =
+      '<div class="row1">' +
+        '<input data-item-idx="' + idx + '" data-field="name" value="' + item.name + '" placeholder="Item name">' +
+        '<input data-item-idx="' + idx + '" data-field="price" value="' + item.price + '" placeholder="Price">' +
+      '</div>' +
+      '<textarea data-item-idx="' + idx + '" data-field="desc" placeholder="Description">' + item.desc + '</textarea>' +
+      (extrasCompatHtml ? '<div class="extras-compat">' + extrasCompatHtml + '</div>' : '') +
+      '<div class="flags-row">' +
+        '<label class="alcohol-label"><input type="checkbox" data-alcohol-idx="' + idx + '" ' + (item.alcohol ? 'checked' : '') + '> Alcohol (18+ at checkout)</label>' +
+        '<label><input type="checkbox" data-avail-toggle-idx="' + idx + '" ' + (hasAvail ? 'checked' : '') + '> Time-gated availability</label>' +
+      '</div>' +
+      '<div class="avail-detail" id="avail-detail-' + idx + '" style="display:' + (hasAvail ? 'block' : 'none') + ';">' +
+        '<div class="avail-days">' + dayCheckboxesHtml + '</div>' +
+        '<div class="avail-hours">' +
+          'From <input type="number" min="0" max="24" data-avail-start-idx="' + idx + '" value="' + avail.startHour + '"> :00' +
+          ' to <input type="number" min="0" max="24" data-avail-end-idx="' + idx + '" value="' + avail.endHour + '"> :00 (Lagos time)' +
+        '</div>' +
+        '<input class="avail-label-input" type="text" data-avail-label-idx="' + idx + '" value="' + avail.label + '" placeholder="Label shown to customers, e.g. Tuesday - Thursday, 4pm - 8pm">' +
+      '</div>';
+    wrap.appendChild(block);
+  });
+
+  wrap.querySelectorAll('input[data-field], textarea[data-field]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var idx = +inp.dataset.itemIdx;
+      var field = inp.dataset.field;
+      content.menuItems[idx][field] = field === 'price' ? (Number(inp.value) || 0) : inp.value;
+    });
+  });
+  wrap.querySelectorAll('input[data-extra-key]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var idx = +cb.dataset.itemIdx;
+      var key = cb.dataset.extraKey;
+      var item = content.menuItems[idx];
+      var pos = item.extras.indexOf(key);
+      if(cb.checked && pos === -1){ item.extras.push(key); }
+      if(!cb.checked && pos !== -1){ item.extras.splice(pos, 1); }
+    });
+  });
+
+  wrap.querySelectorAll('input[data-alcohol-idx]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      content.menuItems[+cb.dataset.alcoholIdx].alcohol = cb.checked;
+    });
+  });
+
+  wrap.querySelectorAll('input[data-avail-toggle-idx]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var idx = +cb.dataset.availToggleIdx;
+      if(cb.checked){
+        content.menuItems[idx].availability = { days:[], startHour:0, endHour:24, label:"" };
+      }else{
+        delete content.menuItems[idx].availability;
+      }
+      renderMenuEditor();
+    });
+  });
+
+  wrap.querySelectorAll('input[data-avail-day-idx]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var idx = +cb.dataset.availDayIdx;
+      var day = +cb.dataset.day;
+      var avail = content.menuItems[idx].availability;
+      var pos = avail.days.indexOf(day);
+      if(cb.checked && pos === -1){ avail.days.push(day); avail.days.sort(); }
+      if(!cb.checked && pos !== -1){ avail.days.splice(pos, 1); }
+      if(!avail.label){ avail.label = defaultAvailabilityLabel(avail); }
+    });
+  });
+
+  wrap.querySelectorAll('input[data-avail-start-idx]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var avail = content.menuItems[+inp.dataset.availStartIdx].availability;
+      avail.startHour = Math.max(0, Math.min(24, Number(inp.value) || 0));
+      if(!avail.label){ avail.label = defaultAvailabilityLabel(avail); }
+    });
+  });
+  wrap.querySelectorAll('input[data-avail-end-idx]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var avail = content.menuItems[+inp.dataset.availEndIdx].availability;
+      avail.endHour = Math.max(0, Math.min(24, Number(inp.value) || 0));
+      if(!avail.label){ avail.label = defaultAvailabilityLabel(avail); }
+    });
+  });
+  wrap.querySelectorAll('input[data-avail-label-idx]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      content.menuItems[+inp.dataset.availLabelIdx].availability.label = inp.value;
+    });
+  });
+}
+
+document.getElementById('saveBtn').addEventListener('click', function(){
+  content.tagline = document.getElementById('edit-tagline').value;
+  content.about = document.getElementById('edit-about').value;
+  content.price = document.getElementById('edit-price').value;
+  content.orderWhatsapp = document.getElementById('edit-orderWhatsapp').value.replace(/\D/g,'');
+  content.addrShort = document.getElementById('edit-addrShort').value;
+  content.addr = document.getElementById('edit-addr').value;
+  content.vatNote = document.getElementById('edit-vatNote').value;
+
+  var statusEl = document.getElementById('saveStatus');
+  fetch('/api/content', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: sessionPassword, content: content })
+  }).then(function(res){
+    if(!res.ok){
+      statusEl.textContent = "Couldn't save - the backend password doesn't match the ADMIN_PASSWORD environment variable.";
+      statusEl.style.color = "#a63f2c";
+      return;
+    }
+    statusEl.textContent = "Saved - live on the main site.";
+    statusEl.style.color = "";
+    setTimeout(function(){ statusEl.textContent = ""; }, 4000);
+  }).catch(function(e){
+    statusEl.textContent = "Couldn't save - try again.";
+    statusEl.style.color = "#a63f2c";
+  });
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  document.getElementById('dashboard').classList.remove('open');
+  document.getElementById('gate').style.display = "flex";
+  document.getElementById('pwInput').value = "";
+});
+
+document.getElementById('pwSubmit').addEventListener('click', function(){
+  var val = document.getElementById('pwInput').value;
+  var errEl = document.getElementById('pwError');
+  errEl.style.display = "none";
+  if(val === SITE_PASSWORD){
+    sessionPassword = val;
+    loadContent().then(function(){
+      fillForm();
+      document.getElementById('gate').style.display = "none";
+      document.getElementById('dashboard').classList.add('open');
+    });
+  }else{
+    errEl.style.display = "block";
+  }
+});
+document.getElementById('pwInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('pwSubmit').click();
+});
+</script>
+</body>
+</html>
